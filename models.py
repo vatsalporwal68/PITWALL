@@ -105,4 +105,21 @@ class TyreCompound(Base):
         autoincrement=True
     )
     name: Mapped[str] = mapped_column(String(50))
-    tyre_type: Mapped[str] = mapped_column(String(20))                          
+    tyre_type: Mapped[str] = mapped_column(String(20))
+
+class Stint(Base):
+    __tablename__ = "stints"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True
+    )
+    race_entry_id: Mapped[int] = mapped_column(
+        ForeignKey("race_entries.id")
+    )
+    tyre_compound_id: Mapped[int] = mapped_column(
+        ForeignKey("tyre_compounds.id")
+    )
+    start_lap: Mapped[int]
+    end_lap: Mapped[int | None]
+    tyre_age_start: Mapped[int]                              
