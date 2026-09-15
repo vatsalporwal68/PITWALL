@@ -1,45 +1,32 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
 from database import get_db
 from models import Race as RaceModel
+from schemas.races import RaceCreate, RaceResponse
 
 
 router = APIRouter()
 
 
-class Race(BaseModel):
-    id: int
-    name: str
-    circuit: str
-    laps: int
-
-
-@router.get("/races", response_model=list[Race])
+@router.get("/races", response_model=list[RaceResponse])
 def get_races(db=Depends(get_db)):
     races = db.query(RaceModel).all()
     return races
 
 
-@router.get("/races/{race_id}", response_model=Race)
+@router.get("/races/{race_id}", response_model=RaceResponse)
 def get_race(race_id: int, db=Depends(get_db)):
     race = db.query(RaceModel).filter(RaceModel.id == race_id).first()
 
     if race is None:
         raise HTTPException(status_code=404, detail="Race not found")
 
-    return Race(
-        id=race.id,
-        name=race.name,
-        circuit=race.circuit,
-        laps=race.laps
-    )
+    return race
 
 
-@router.post("/races", response_model=Race, status_code=201)
-def create_race(race: Race, db=Depends(get_db)):
+@router.post("/races", response_model=RaceResponse, status_code=201)
+def create_race(race: RaceCreate, db=Depends(get_db)):
     new_race = RaceModel(
-        id=race.id,
         name=race.name,
         circuit=race.circuit,
         laps=race.laps
@@ -47,17 +34,17 @@ def create_race(race: Race, db=Depends(get_db)):
 
     db.add(new_race)
     db.commit()
+    db.refresh(new_race)
 
-    return Race(
-        id=new_race.id,
-        name=new_race.name,
-        circuit=new_race.circuit,
-        laps=new_race.laps
-    )
+    return new_race
 
 
-@router.put("/races/{race_id}", response_model=Race)
-def update_race(race_id: int, updated_race: Race, db=Depends(get_db)):
+@router.put("/races/{race_id}", response_model=RaceResponse)
+def update_race(
+    race_id: int,
+    updated_race: RaceCreate,
+    db=Depends(get_db)
+):
     race = db.query(RaceModel).filter(RaceModel.id == race_id).first()
 
     if race is None:
@@ -68,13 +55,9 @@ def update_race(race_id: int, updated_race: Race, db=Depends(get_db)):
     race.laps = updated_race.laps
 
     db.commit()
+    db.refresh(race)
 
-    return Race(
-        id=race.id,
-        name=race.name,
-        circuit=race.circuit,
-        laps=race.laps
-    )
+    return race
 
 
 @router.delete("/races/{race_id}")
