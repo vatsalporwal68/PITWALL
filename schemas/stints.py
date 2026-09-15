@@ -16,3 +16,11 @@ class StintResponse(BaseModel):
     start_lap: int
     end_lap: int | None
     tyre_age_start: int
+    
+
+class StintAnalysisResponse(BaseModel):
+    stint_id: int
+    lap_count: int
+    average_lap_time: float | None
+    best_lap_time: float | None
+    worst_lap_time: float | None
