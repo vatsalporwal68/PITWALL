@@ -82,4 +82,17 @@ class Lap(Base):
         ForeignKey("race_entries.id")
     )
     lap_number: Mapped[int]
-    lap_time: Mapped[float]                  
+    lap_time: Mapped[float]
+
+class Sector(Base):
+    __tablename__ = "sectors"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True
+    )
+    lap_id: Mapped[int] = mapped_column(
+        ForeignKey("laps.id")
+    )
+    sector_number: Mapped[int]
+    sector_time: Mapped[float]                      
