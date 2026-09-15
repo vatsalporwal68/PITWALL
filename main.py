@@ -7,6 +7,7 @@ from routers.drivers import router as drivers_router
 from routers.race_entries import router as race_entries_router
 from routers.laps import router as laps_router
 from routers.sectors import router as sectors_router
+from routers.tyres import router as tyres_router
 
 
 app = FastAPI()
@@ -24,3 +25,4 @@ app.include_router(drivers_router)
 app.include_router(race_entries_router)
 app.include_router(laps_router)
 app.include_router(sectors_router)
+app.include_router(tyres_router)

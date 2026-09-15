@@ -95,4 +95,14 @@ class Sector(Base):
         ForeignKey("laps.id")
     )
     sector_number: Mapped[int]
-    sector_time: Mapped[float]                      
+    sector_time: Mapped[float]
+
+class TyreCompound(Base):
+    __tablename__ = "tyre_compounds"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True
+    )
+    name: Mapped[str] = mapped_column(String(50))
+    tyre_type: Mapped[str] = mapped_column(String(20))                          
