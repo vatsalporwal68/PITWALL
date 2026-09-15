@@ -13,3 +13,10 @@ class Race(Base):
     name: Mapped[str] = mapped_column(String(100))
     circuit: Mapped[str] = mapped_column(String(100))
     laps: Mapped[int]
+
+class Circuit(Base):
+    __tablename__ = "circuits"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100))
+    country: Mapped[str] = mapped_column(String(100))    
