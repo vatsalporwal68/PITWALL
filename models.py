@@ -28,4 +28,14 @@ class Circuit(Base):
         autoincrement=True
     )
     name: Mapped[str] = mapped_column(String(100))
-    country: Mapped[str] = mapped_column(String(100))  
+    country: Mapped[str] = mapped_column(String(100))
+
+class Team(Base):
+    __tablename__ = "teams"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True
+    )
+    name: Mapped[str] = mapped_column(String(100))
+    nationality: Mapped[str] = mapped_column(String(100))      
