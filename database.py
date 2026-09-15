@@ -36,3 +36,10 @@ if __name__ == "__main__":
         print("Database session created successfully")
     finally:
         db.close()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()        
