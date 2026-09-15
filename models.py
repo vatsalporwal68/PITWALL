@@ -69,4 +69,17 @@ class RaceEntry(Base):
     grid_position: Mapped[int]
     finishing_position: Mapped[int | None]
     points: Mapped[float]
-    status: Mapped[str] = mapped_column(String(50))              
+    status: Mapped[str] = mapped_column(String(50))
+
+class Lap(Base):
+    __tablename__ = "laps"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True
+    )
+    race_entry_id: Mapped[int] = mapped_column(
+        ForeignKey("race_entries.id")
+    )
+    lap_number: Mapped[int]
+    lap_time: Mapped[float]                  
