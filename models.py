@@ -38,4 +38,17 @@ class Team(Base):
         autoincrement=True
     )
     name: Mapped[str] = mapped_column(String(100))
-    nationality: Mapped[str] = mapped_column(String(100))      
+    nationality: Mapped[str] = mapped_column(String(100))
+
+class Driver(Base):
+    __tablename__ = "drivers"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True
+    )
+    name: Mapped[str] = mapped_column(String(100))
+    number: Mapped[int]
+    team_id: Mapped[int] = mapped_column(
+        ForeignKey("teams.id")
+    )          
