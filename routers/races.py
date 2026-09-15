@@ -16,19 +16,33 @@ def get_races(db=Depends(get_db)):
 
 @router.get("/races/{race_id}", response_model=RaceResponse)
 def get_race(race_id: int, db=Depends(get_db)):
-    race = db.query(RaceModel).filter(RaceModel.id == race_id).first()
+    race = (
+        db.query(RaceModel)
+        .filter(RaceModel.id == race_id)
+        .first()
+    )
 
     if race is None:
-        raise HTTPException(status_code=404, detail="Race not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Race not found"
+        )
 
     return race
 
 
-@router.post("/races", response_model=RaceResponse, status_code=201)
-def create_race(race: RaceCreate, db=Depends(get_db)):
+@router.post(
+    "/races",
+    response_model=RaceResponse,
+    status_code=201
+)
+def create_race(
+    race: RaceCreate,
+    db=Depends(get_db)
+):
     new_race = RaceModel(
         name=race.name,
-        circuit=race.circuit,
+        circuit_id=race.circuit_id,
         laps=race.laps
     )
 
@@ -39,19 +53,29 @@ def create_race(race: RaceCreate, db=Depends(get_db)):
     return new_race
 
 
-@router.put("/races/{race_id}", response_model=RaceResponse)
+@router.put(
+    "/races/{race_id}",
+    response_model=RaceResponse
+)
 def update_race(
     race_id: int,
     updated_race: RaceCreate,
     db=Depends(get_db)
 ):
-    race = db.query(RaceModel).filter(RaceModel.id == race_id).first()
+    race = (
+        db.query(RaceModel)
+        .filter(RaceModel.id == race_id)
+        .first()
+    )
 
     if race is None:
-        raise HTTPException(status_code=404, detail="Race not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Race not found"
+        )
 
     race.name = updated_race.name
-    race.circuit = updated_race.circuit
+    race.circuit_id = updated_race.circuit_id
     race.laps = updated_race.laps
 
     db.commit()
@@ -61,21 +85,25 @@ def update_race(
 
 
 @router.delete("/races/{race_id}")
-def delete_race(race_id: int, db=Depends(get_db)):
-    race = db.query(RaceModel).filter(RaceModel.id == race_id).first()
+def delete_race(
+    race_id: int,
+    db=Depends(get_db)
+):
+    race = (
+        db.query(RaceModel)
+        .filter(RaceModel.id == race_id)
+        .first()
+    )
 
     if race is None:
-        raise HTTPException(status_code=404, detail="Race not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Race not found"
+        )
 
     db.delete(race)
     db.commit()
 
     return {
-        "message": "Race deleted successfully",
-        "race": {
-            "id": race.id,
-            "name": race.name,
-            "circuit": race.circuit,
-            "laps": race.laps
-        }
+        "message": "Race deleted successfully"
     }
