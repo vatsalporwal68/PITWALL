@@ -172,3 +172,28 @@ def analyze_stint(stint_id: int, db=Depends(get_db)):
         "best_lap_time": min(lap_times),
         "worst_lap_time": max(lap_times)
     }
+
+@router.get("/stints/{stint_id}/details")
+def get_stint_details(
+    stint_id: int,
+    db=Depends(get_db)
+):
+    stint = (
+        db.query(StintModel)
+        .filter(StintModel.id == stint_id)
+        .first()
+    )
+
+    if stint is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Stint not found"
+        )
+
+    return {
+        "stint_id": stint.id,
+        "driver": stint.race_entry.driver.name,
+        "tyre": stint.tyre_compound.name,
+        "start_lap": stint.start_lap,
+        "end_lap": stint.end_lap
+    }    

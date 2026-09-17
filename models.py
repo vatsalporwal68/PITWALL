@@ -140,4 +140,7 @@ class Stint(Base):
     )
     start_lap: Mapped[int]
     end_lap: Mapped[int | None]
-    tyre_age_start: Mapped[int]                              
+    tyre_age_start: Mapped[int]
+
+    race_entry: Mapped["RaceEntry"] = relationship()
+    tyre_compound: Mapped["TyreCompound"] = relationship()                              
