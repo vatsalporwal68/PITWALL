@@ -57,6 +57,8 @@ class Driver(Base):
         ForeignKey("teams.id")
     )
 
+    team: Mapped["Team"] = relationship()
+
 
 class RaceEntry(Base):
     __tablename__ = "race_entries"

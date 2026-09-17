@@ -101,3 +101,24 @@ def delete_driver(driver_id: int, db=Depends(get_db)):
     return {
         "message": "Driver deleted successfully"
     }
+
+@router.get("/drivers/{driver_id}/team")
+def get_driver_team(driver_id: int, db=Depends(get_db)):
+
+    driver = (
+        db.query(DriverModel)
+        .filter(DriverModel.id == driver_id)
+        .first()
+    )
+
+    if driver is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Driver not found"
+        )
+
+    return {
+        "driver": driver.name,
+        "team": driver.team.name,
+        "nationality": driver.team.nationality
+    }
