@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -19,6 +19,8 @@ class Race(Base):
     )
     laps: Mapped[int]
 
+    circuit: Mapped["Circuit"] = relationship()
+
 
 class Circuit(Base):
     __tablename__ = "circuits"
@@ -30,6 +32,7 @@ class Circuit(Base):
     name: Mapped[str] = mapped_column(String(100))
     country: Mapped[str] = mapped_column(String(100))
 
+
 class Team(Base):
     __tablename__ = "teams"
 
@@ -39,6 +42,7 @@ class Team(Base):
     )
     name: Mapped[str] = mapped_column(String(100))
     nationality: Mapped[str] = mapped_column(String(100))
+
 
 class Driver(Base):
     __tablename__ = "drivers"
@@ -52,6 +56,7 @@ class Driver(Base):
     team_id: Mapped[int] = mapped_column(
         ForeignKey("teams.id")
     )
+
 
 class RaceEntry(Base):
     __tablename__ = "race_entries"
@@ -71,6 +76,7 @@ class RaceEntry(Base):
     points: Mapped[float]
     status: Mapped[str] = mapped_column(String(50))
 
+
 class Lap(Base):
     __tablename__ = "laps"
 
@@ -83,6 +89,7 @@ class Lap(Base):
     )
     lap_number: Mapped[int]
     lap_time: Mapped[float]
+
 
 class Sector(Base):
     __tablename__ = "sectors"
@@ -97,6 +104,7 @@ class Sector(Base):
     sector_number: Mapped[int]
     sector_time: Mapped[float]
 
+
 class TyreCompound(Base):
     __tablename__ = "tyre_compounds"
 
@@ -106,6 +114,7 @@ class TyreCompound(Base):
     )
     name: Mapped[str] = mapped_column(String(50))
     tyre_type: Mapped[str] = mapped_column(String(20))
+
 
 class Stint(Base):
     __tablename__ = "stints"

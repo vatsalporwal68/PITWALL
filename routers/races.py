@@ -107,3 +107,24 @@ def delete_race(
     return {
         "message": "Race deleted successfully"
     }
+
+@router.get("/races/{race_id}/circuit")
+def get_race_circuit(race_id: int, db=Depends(get_db)):
+
+    race = (
+        db.query(RaceModel)
+        .filter(RaceModel.id == race_id)
+        .first()
+    )
+
+    if race is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Race not found"
+        )
+
+    return {
+        "race": race.name,
+        "circuit": race.circuit.name,
+        "country": race.circuit.country
+    }    
