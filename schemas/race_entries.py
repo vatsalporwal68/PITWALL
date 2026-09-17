@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RaceEntryCreate(BaseModel):
@@ -10,7 +10,25 @@ class RaceEntryCreate(BaseModel):
     status: str
 
 
+class RaceInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    laps: int
+
+
+class DriverInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    number: int
+
+
 class RaceEntryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     race_id: int
     driver_id: int
@@ -18,3 +36,5 @@ class RaceEntryResponse(BaseModel):
     finishing_position: int | None
     points: float
     status: str
+    race: RaceInfo
+    driver: DriverInfo
