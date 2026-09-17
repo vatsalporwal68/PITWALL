@@ -95,6 +95,8 @@ class Lap(Base):
     lap_number: Mapped[int]
     lap_time: Mapped[float]
 
+    race_entry: Mapped["RaceEntry"] = relationship()
+
 
 class Sector(Base):
     __tablename__ = "sectors"
@@ -108,6 +110,8 @@ class Sector(Base):
     )
     sector_number: Mapped[int]
     sector_time: Mapped[float]
+
+    lap: Mapped["Lap"] = relationship()
 
 
 class TyreCompound(Base):

@@ -104,3 +104,27 @@ def delete_sector(sector_id: int, db=Depends(get_db)):
     return {
         "message": "Sector deleted successfully"
     }
+    
+@router.get("/sectors/{sector_id}/details")
+def get_sector_details(
+    sector_id: int,
+    db=Depends(get_db)
+):
+    sector = (
+        db.query(SectorModel)
+        .filter(SectorModel.id == sector_id)
+        .first()
+    )
+
+    if sector is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Sector not found"
+        )
+
+    return {
+        "sector_number": sector.sector_number,
+        "sector_time": sector.sector_time,
+        "lap_id": sector.lap.id,
+        "lap_number": sector.lap.lap_number
+    }    

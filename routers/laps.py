@@ -136,3 +136,27 @@ def delete_lap(lap_id: int, db=Depends(get_db)):
     return {
         "message": "Lap deleted successfully"
     }
+
+@router.get("/laps/{lap_id}/details")
+def get_lap_details(
+    lap_id: int,
+    db=Depends(get_db)
+):
+    lap = (
+        db.query(LapModel)
+        .filter(LapModel.id == lap_id)
+        .first()
+    )
+
+    if lap is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Lap not found"
+        )
+
+    return {
+        "lap_number": lap.lap_number,
+        "lap_time": lap.lap_time,
+        "race_entry_id": lap.race_entry.id,
+        "driver": lap.race_entry.driver.name
+    }    
