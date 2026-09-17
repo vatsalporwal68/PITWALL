@@ -119,3 +119,27 @@ def delete_race_entry(
     return {
         "message": "Race entry deleted successfully"
     }
+
+@router.get("/race-entries/{race_entry_id}/details")
+def get_race_entry_details(
+    race_entry_id: int,
+    db=Depends(get_db)
+):
+    race_entry = (
+        db.query(RaceEntryModel)
+        .filter(RaceEntryModel.id == race_entry_id)
+        .first()
+    )
+
+    if race_entry is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Race entry not found"
+        )
+
+    return {
+        "race": race_entry.race.name,
+        "driver": race_entry.driver.name,
+        "grid_position": race_entry.grid_position,
+        "status": race_entry.status
+    }    

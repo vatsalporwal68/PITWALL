@@ -78,6 +78,9 @@ class RaceEntry(Base):
     points: Mapped[float]
     status: Mapped[str] = mapped_column(String(50))
 
+    race: Mapped["Race"] = relationship()
+    driver: Mapped["Driver"] = relationship()
+
 
 class Lap(Base):
     __tablename__ = "laps"
