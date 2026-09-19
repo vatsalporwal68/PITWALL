@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-
+from services.lap_service import analyze_lap as analyze_lap_service
 from database import get_db
 from models import Lap as LapModel, Sector as SectorModel
 from schemas.laps import LapAnalysisResponse, LapCreate, LapResponse
@@ -35,35 +35,15 @@ def get_lap(lap_id: int, db=Depends(get_db)):
     response_model=LapAnalysisResponse
 )
 def analyze_lap(lap_id: int, db=Depends(get_db)):
-    lap = (
-        db.query(LapModel)
-        .filter(LapModel.id == lap_id)
-        .first()
-    )
+    result = analyze_lap_service(lap_id, db)
 
-    if lap is None:
+    if result is None:
         raise HTTPException(
             status_code=404,
             detail="Lap not found"
         )
 
-    sectors = (
-        db.query(SectorModel)
-        .filter(SectorModel.lap_id == lap_id)
-        .all()
-    )
-
-    sector_total = sum(sector.sector_time for sector in sectors)
-
-    difference = round(lap.lap_time - sector_total, 3)
-
-    return {
-        "lap_id": lap.id,
-        "lap_time": lap.lap_time,
-        "sector_total": sector_total,
-        "difference": difference,
-        "sector_count": len(sectors)
-    }    
+    return result   
 
 
 @router.post(
