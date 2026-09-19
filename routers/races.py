@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from database import get_db
 from models import Race as RaceModel
 from schemas.races import RaceCreate, RaceResponse
+from sqlalchemy.orm import selectinload
 
 
 router = APIRouter()
@@ -10,7 +11,11 @@ router = APIRouter()
 
 @router.get("/races", response_model=list[RaceResponse])
 def get_races(db=Depends(get_db)):
-    races = db.query(RaceModel).all()
+    races = (
+        db.query(RaceModel)
+        .options(selectinload(RaceModel.circuit))
+        .all()
+    )
     return races
 
 
@@ -127,4 +132,31 @@ def get_race_circuit(race_id: int, db=Depends(get_db)):
         "race": race.name,
         "circuit": race.circuit.name,
         "country": race.circuit.country
-    }    
+    }
+
+@router.get("/races/{race_id}/entries")
+def get_race_entries(
+    race_id: int,
+    db=Depends(get_db)
+):
+    race = (
+        db.query(RaceModel)
+        .filter(RaceModel.id == race_id)
+        .first()
+    )
+
+    if race is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Race not found"
+        )
+
+    return [
+        {
+            "entry_id": entry.id,
+            "driver_id": entry.driver_id,
+            "grid_position": entry.grid_position,
+            "status": entry.status
+        }
+        for entry in race.race_entries
+    ]

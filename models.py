@@ -20,6 +20,7 @@ class Race(Base):
     laps: Mapped[int]
 
     circuit: Mapped["Circuit"] = relationship()
+    race_entries: Mapped[list["RaceEntry"]] = relationship()
 
 
 class Circuit(Base):
@@ -143,4 +144,5 @@ class Stint(Base):
     tyre_age_start: Mapped[int]
 
     race_entry: Mapped["RaceEntry"] = relationship()
-    tyre_compound: Mapped["TyreCompound"] = relationship()                              
+    tyre_compound: Mapped["TyreCompound"] = relationship()
+                                 
