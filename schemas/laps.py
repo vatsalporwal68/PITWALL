@@ -1,11 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LapCreate(BaseModel):
     race_entry_id: int
-    lap_number: int
-    lap_time: float
-
+    lap_number: int = Field(gt=0)
+    lap_time: float = Field(gt=0)
 
 class RaceEntryInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)

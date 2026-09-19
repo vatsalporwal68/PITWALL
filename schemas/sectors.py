@@ -1,10 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SectorCreate(BaseModel):
     lap_id: int
-    sector_number: int
-    sector_time: float
+    sector_number: int = Field(ge=1, le=3)
+    sector_time: float = Field(gt=0)
 
 
 class LapInfo(BaseModel):
