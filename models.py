@@ -20,7 +20,9 @@ class Race(Base):
     laps: Mapped[int]
 
     circuit: Mapped["Circuit"] = relationship()
-    race_entries: Mapped[list["RaceEntry"]] = relationship()
+    race_entries: Mapped[list["RaceEntry"]] = relationship(
+        back_populates="race"
+    )
 
 
 class Circuit(Base):
@@ -79,7 +81,9 @@ class RaceEntry(Base):
     points: Mapped[float]
     status: Mapped[str] = mapped_column(String(50))
 
-    race: Mapped["Race"] = relationship()
+    race: Mapped["Race"] = relationship(
+        back_populates="race_entries"
+    )
     driver: Mapped["Driver"] = relationship()
 
 
