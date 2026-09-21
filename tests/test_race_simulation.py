@@ -16,14 +16,16 @@ def test_advance_race_state():
 
     lap_model = LapModel(
         base_lap_time=90.0,
-        tyre_degradation=0.08
+        tyre_degradation=0.08,
+        fuel_penalty=0.03
     )
 
     next_state, lap_time = advance_race_state(
         state,
-        lap_model
+        lap_model,
+        fuel_load=50
     )
 
     assert next_state.current_lap == 19
     assert next_state.tyre_age == 1
-    assert lap_time == 90.08
+    assert lap_time == 91.58
