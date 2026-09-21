@@ -1,3 +1,4 @@
+from domain.lap_model import LapModel
 from domain.race_state import RaceState
 from services.race_simulation_service import advance_race_state
 
@@ -13,7 +14,16 @@ def test_advance_race_state():
         status="Racing"
     )
 
-    next_state = advance_race_state(state)
+    lap_model = LapModel(
+        base_lap_time=90.0,
+        tyre_degradation=0.08
+    )
+
+    next_state, lap_time = advance_race_state(
+        state,
+        lap_model
+    )
 
     assert next_state.current_lap == 19
     assert next_state.tyre_age == 1
+    assert lap_time == 90.08
