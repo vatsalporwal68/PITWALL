@@ -18,12 +18,13 @@ def test_get_race_state(client):
         assert state.current_lap == 0
         assert state.tyre_compound == "Unknown"
         assert state.tyre_age == 0
+        assert state.fuel_load == 0
 
     finally:
         db.close()
 
 
-def test_advance_lap():
+def test_advance_race_state():
     state = RaceState(
         race_id=1,
         race_entry_id=1,
@@ -31,6 +32,7 @@ def test_advance_lap():
         position=2,
         tyre_compound="Medium",
         tyre_age=0,
+        fuel_load=50,
         status="Racing"
     )
 

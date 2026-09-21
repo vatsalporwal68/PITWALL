@@ -19,5 +19,6 @@ def get_race_state(race_entry_id: int, db):
         position=race_entry.grid_position,
         tyre_compound="Unknown",
         tyre_age=0,
+        fuel_load=0,
         status=race_entry.status
     )

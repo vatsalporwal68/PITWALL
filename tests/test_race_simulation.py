@@ -11,6 +11,7 @@ def test_advance_race_state():
         position=2,
         tyre_compound="Medium",
         tyre_age=0,
+        fuel_load=50,
         status="Racing"
     )
 
@@ -23,9 +24,10 @@ def test_advance_race_state():
     next_state, lap_time = advance_race_state(
         state,
         lap_model,
-        fuel_load=50
+        fuel_consumption=2
     )
 
     assert next_state.current_lap == 19
     assert next_state.tyre_age == 1
     assert lap_time == 91.58
+    assert next_state.fuel_load == 48

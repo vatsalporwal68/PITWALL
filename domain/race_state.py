@@ -9,6 +9,7 @@ class RaceState:
     position: int
     tyre_compound: str
     tyre_age: int
+    fuel_load: float
     status: str
 
     def advance_lap(self):
