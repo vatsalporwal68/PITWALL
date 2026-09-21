@@ -10,3 +10,7 @@ class RaceState:
     tyre_compound: str
     tyre_age: int
     status: str
+
+    def advance_lap(self):
+        self.current_lap += 1
+        self.tyre_age += 1
