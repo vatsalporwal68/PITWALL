@@ -1,12 +1,4 @@
-from fastapi.testclient import TestClient
-
-from main import app
-
-
-client = TestClient(app)
-
-
-def test_lap_analysis():
+def test_lap_analysis(client):
     response = client.get("/laps/1/analysis")
 
     assert response.status_code == 200
@@ -19,7 +11,7 @@ def test_lap_analysis():
     assert data["difference"] == 0
     assert data["sector_count"] == 3
 
-def test_lap_analysis_not_found():
+def test_lap_analysis_not_found(client):
     response = client.get("/laps/99999/analysis")
 
     assert response.status_code == 404

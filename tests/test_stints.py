@@ -1,12 +1,4 @@
-from fastapi.testclient import TestClient
-
-from main import app
-
-
-client = TestClient(app)
-
-
-def test_stint_analysis():
+def test_stint_analysis(client):
     response = client.get("/stints/1/analysis")
 
     assert response.status_code == 200
@@ -20,7 +12,7 @@ def test_stint_analysis():
     assert data["worst_lap_time"] == 91.234
 
 
-def test_stint_analysis_not_found():
+def test_stint_analysis_not_found(client):
     response = client.get("/stints/99999/analysis")
 
     assert response.status_code == 404
