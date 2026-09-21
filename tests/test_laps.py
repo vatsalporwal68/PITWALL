@@ -18,3 +18,12 @@ def test_lap_analysis():
     assert data["sector_total"] == 91.234
     assert data["difference"] == 0
     assert data["sector_count"] == 3
+
+def test_lap_analysis_not_found():
+    response = client.get("/laps/99999/analysis")
+
+    assert response.status_code == 404
+
+    data = response.json()
+
+    assert data["detail"] == "Lap not found"    
