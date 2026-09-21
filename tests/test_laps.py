@@ -18,4 +18,16 @@ def test_lap_analysis_not_found(client):
 
     data = response.json()
 
-    assert data["detail"] == "Lap not found"    
+    assert data["detail"] == "Lap not found"
+
+def test_create_lap_validation(client):
+    response = client.post(
+        "/laps",
+        json={
+            "race_entry_id": 1,
+            "lap_number": -5,
+            "lap_time": -100
+        }
+    )
+
+    assert response.status_code == 422        
