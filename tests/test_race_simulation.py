@@ -1,6 +1,10 @@
 from domain.lap_model import LapModel
 from domain.race_state import RaceState
 from services.race_simulation_service import advance_race_state
+from services.race_simulation_service import (
+    advance_race_state,
+    simulate_laps
+)
 
 
 def test_advance_race_state():
@@ -31,3 +35,33 @@ def test_advance_race_state():
     assert next_state.tyre_age == 1
     assert lap_time == 91.58
     assert next_state.fuel_load == 48
+
+def test_simulate_multiple_laps():
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=18,
+        position=2,
+        tyre_compound="Medium",
+        tyre_age=0,
+        fuel_load=50,
+        status="Racing"
+    )
+
+    lap_model = LapModel(
+        base_lap_time=90.0,
+        tyre_degradation=0.08,
+        fuel_penalty=0.03
+    )
+
+    lap_times = simulate_laps(
+        state,
+        lap_model,
+        fuel_consumption=2,
+        lap_count=3
+    )
+
+    assert len(lap_times) == 3
+    assert state.current_lap == 21
+    assert state.tyre_age == 3
+    assert state.fuel_load == 44    
