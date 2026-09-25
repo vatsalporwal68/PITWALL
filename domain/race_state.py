@@ -16,6 +16,10 @@ class RaceState:
         self.current_lap += 1
         self.tyre_age += 1
 
+    def change_tyre(self, new_compound: str):
+        self.tyre_compound = new_compound
+        self.tyre_age = 0
+
 
 @dataclass
 class LapResult:

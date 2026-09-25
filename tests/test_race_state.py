@@ -40,4 +40,23 @@ def test_advance_race_state():
 
     assert state.current_lap == 19
     assert state.tyre_age == 1
+
+def test_change_tyre():
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=25,
+        position=3,
+        tyre_compound="Medium",
+        tyre_age=18,
+        fuel_load=30,
+        status="Racing"
+    )
+
+    state.change_tyre("Hard")
+
+    assert state.tyre_compound == "Hard"
+    assert state.tyre_age == 0
+    assert state.current_lap == 25
+    assert state.position == 3    
         
