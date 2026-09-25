@@ -233,4 +233,4 @@ def test_simulate_strategy():
 
     assert result.strategy_name == "One Stop"
     assert result.pit_stops == 1
-    assert result.total_race_time == 480.12            
+    assert result.total_race_time == 480.12
