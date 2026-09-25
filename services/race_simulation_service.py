@@ -46,6 +46,13 @@ def simulate_laps(
 
     return lap_results
 
+def perform_pit_stop(
+    state: RaceState,
+    new_compound: str
+) -> RaceState:
+    state.change_tyre(new_compound)
+    return state    
+
 def calculate_stint_summary(lap_results):
     if not lap_results:
         return {

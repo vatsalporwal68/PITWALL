@@ -9,6 +9,12 @@ from services.race_simulation_service import (
     simulate_laps,
     calculate_stint_summary
 )
+from services.race_simulation_service import (
+    advance_race_state,
+    simulate_laps,
+    calculate_stint_summary,
+    perform_pit_stop
+)
 
 
 def test_advance_race_state():
@@ -116,4 +122,74 @@ def test_calculate_stint_summary():
     assert summary["best_lap_time"] == 91.58
     assert summary["worst_lap_time"] == 91.62
     assert summary["fuel_remaining"] == 44
-    assert summary["tyre_age"] == 3       
+    assert summary["tyre_age"] == 3
+
+def test_perform_pit_stop():
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=25,
+        position=3,
+        tyre_compound="Medium",
+        tyre_age=18,
+        fuel_load=30,
+        status="Racing"
+    )
+
+    updated_state = perform_pit_stop(
+        state,
+        new_compound="Hard"
+    )
+
+    assert updated_state.tyre_compound == "Hard"
+    assert updated_state.tyre_age == 0
+    assert updated_state.current_lap == 25
+    assert updated_state.position == 3
+
+def test_multi_stint_simulation():
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=18,
+        position=2,
+        tyre_compound="Medium",
+        tyre_age=0,
+        fuel_load=50,
+        status="Racing"
+    )
+
+    lap_model = LapModel(
+        base_lap_time=90.0,
+        tyre_degradation=0.08,
+        fuel_penalty=0.03
+    )
+
+    first_stint = simulate_laps(
+        state,
+        lap_model,
+        fuel_consumption=2,
+        lap_count=3
+    )
+
+    assert first_stint[-1].lap_number == 21
+    assert first_stint[-1].tyre_age == 3
+
+    perform_pit_stop(
+        state,
+        new_compound="Hard"
+    )
+
+    assert state.tyre_compound == "Hard"
+    assert state.tyre_age == 0
+
+    second_stint = simulate_laps(
+        state,
+        lap_model,
+        fuel_consumption=2,
+        lap_count=2
+    )
+
+    assert second_stint[0].lap_number == 22
+    assert second_stint[0].tyre_age == 1
+    assert second_stint[1].lap_number == 23
+    assert second_stint[1].tyre_age == 2               
