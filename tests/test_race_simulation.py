@@ -1,12 +1,18 @@
-from domain.lap_model import LapModel
-from domain.race_state import RaceState
+from domain.race_state import (
+    LapResult,
+    RaceState,
+    StrategyResult
+)
+
 from services.race_simulation_service import (
     advance_race_state,
     simulate_laps,
     calculate_stint_summary,
     perform_pit_stop,
-    simulate_strategy
+    simulate_strategy,
+    compare_strategies
 )
+from domain.lap_model import LapModel
 
 
 def test_advance_race_state():
@@ -234,3 +240,26 @@ def test_simulate_strategy():
     assert result.strategy_name == "One Stop"
     assert result.pit_stops == 1
     assert result.total_race_time == 480.12
+
+def test_compare_strategies():
+    strategy_one = StrategyResult(
+        strategy_name="One Stop",
+        total_race_time=480.12,
+        pit_stops=1
+    )
+
+    strategy_two = StrategyResult(
+        strategy_name="Two Stop",
+        total_race_time=485.50,
+        pit_stops=2
+    )
+
+    comparison = compare_strategies(
+        [strategy_one, strategy_two]
+    )
+
+    assert len(comparison.strategies) == 2
+    assert comparison.strategies[0].strategy_name == "One Stop"
+    assert comparison.strategies[1].strategy_name == "Two Stop"
+    assert comparison.strategies[0].total_race_time == 480.12
+    assert comparison.strategies[1].total_race_time == 485.50    

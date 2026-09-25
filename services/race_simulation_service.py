@@ -1,5 +1,10 @@
 from domain.lap_model import LapModel
-from domain.race_state import LapResult, RaceState, StrategyResult
+from domain.race_state import (
+    LapResult,
+    RaceState,
+    StrategyResult,
+    StrategyComparisonResult
+)
 
 
 def advance_race_state(
@@ -116,4 +121,11 @@ def simulate_strategy(
         strategy_name=strategy_name,
         total_race_time=round(total_race_time, 3),
         pit_stops=pit_stops
-    )           
+    )
+
+def compare_strategies(
+    strategy_results: list[StrategyResult]
+) -> StrategyComparisonResult:
+    return StrategyComparisonResult(
+        strategies=strategy_results
+    )              

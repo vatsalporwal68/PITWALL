@@ -33,4 +33,8 @@ class LapResult:
 class StrategyResult:
     strategy_name: str
     total_race_time: float
-    pit_stops: int    
+    pit_stops: int
+
+@dataclass
+class StrategyComparisonResult:
+    strategies: list[StrategyResult]        
