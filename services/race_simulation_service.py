@@ -48,10 +48,12 @@ def simulate_laps(
 
 def perform_pit_stop(
     state: RaceState,
-    new_compound: str
-) -> RaceState:
+    new_compound: str,
+    pit_stop_time: float
+) -> tuple[RaceState, float]:
     state.change_tyre(new_compound)
-    return state    
+
+    return state, pit_stop_time   
 
 def calculate_stint_summary(lap_results):
     if not lap_results:

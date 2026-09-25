@@ -136,15 +136,17 @@ def test_perform_pit_stop():
         status="Racing"
     )
 
-    updated_state = perform_pit_stop(
+    updated_state, pit_time = perform_pit_stop(
         state,
-        new_compound="Hard"
+        new_compound="Hard",
+        pit_stop_time=22.5
     )
 
     assert updated_state.tyre_compound == "Hard"
     assert updated_state.tyre_age == 0
     assert updated_state.current_lap == 25
     assert updated_state.position == 3
+    assert pit_time == 22.5
 
 def test_multi_stint_simulation():
     state = RaceState(
@@ -174,11 +176,12 @@ def test_multi_stint_simulation():
     assert first_stint[-1].lap_number == 21
     assert first_stint[-1].tyre_age == 3
 
-    perform_pit_stop(
+    updated_state, pit_time = perform_pit_stop(
         state,
-        new_compound="Hard"
+        new_compound="Hard",
+        pit_stop_time=22.5
     )
-
+    assert pit_time == 22.5
     assert state.tyre_compound == "Hard"
     assert state.tyre_age == 0
 
