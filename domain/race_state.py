@@ -37,4 +37,6 @@ class StrategyResult:
 
 @dataclass
 class StrategyComparisonResult:
-    strategies: list[StrategyResult]        
+    strategies: list[StrategyResult]
+    fastest_strategy: str
+    time_difference: dict[str, float]      

@@ -126,6 +126,21 @@ def simulate_strategy(
 def compare_strategies(
     strategy_results: list[StrategyResult]
 ) -> StrategyComparisonResult:
+    fastest = min(
+        strategy_results,
+        key=lambda strategy: strategy.total_race_time
+    )
+
+    time_difference = {
+        strategy.strategy_name: round(
+            strategy.total_race_time - fastest.total_race_time,
+            3
+        )
+        for strategy in strategy_results
+    }
+
     return StrategyComparisonResult(
-        strategies=strategy_results
+        strategies=strategy_results,
+        fastest_strategy=fastest.strategy_name,
+        time_difference=time_difference
     )              

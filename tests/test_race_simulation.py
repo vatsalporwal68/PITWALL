@@ -259,7 +259,8 @@ def test_compare_strategies():
     )
 
     assert len(comparison.strategies) == 2
-    assert comparison.strategies[0].strategy_name == "One Stop"
-    assert comparison.strategies[1].strategy_name == "Two Stop"
-    assert comparison.strategies[0].total_race_time == 480.12
-    assert comparison.strategies[1].total_race_time == 485.50    
+
+    assert comparison.fastest_strategy == "One Stop"
+
+    assert comparison.time_difference["One Stop"] == 0.0
+    assert comparison.time_difference["Two Stop"] == 5.38   
