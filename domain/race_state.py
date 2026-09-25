@@ -15,3 +15,12 @@ class RaceState:
     def advance_lap(self):
         self.current_lap += 1
         self.tyre_age += 1
+
+
+@dataclass
+class LapResult:
+    lap_number: int
+    lap_time: float
+    tyre_age: int
+    fuel_load: float
+    position: int
