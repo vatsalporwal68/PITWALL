@@ -28,3 +28,9 @@ class LapResult:
     tyre_age: int
     fuel_load: float
     position: int
+
+@dataclass
+class StrategyResult:
+    strategy_name: str
+    total_race_time: float
+    pit_stops: int    

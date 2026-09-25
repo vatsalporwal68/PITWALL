@@ -2,18 +2,10 @@ from domain.lap_model import LapModel
 from domain.race_state import RaceState
 from services.race_simulation_service import (
     advance_race_state,
-    simulate_laps
-)
-from services.race_simulation_service import (
-    advance_race_state,
-    simulate_laps,
-    calculate_stint_summary
-)
-from services.race_simulation_service import (
-    advance_race_state,
     simulate_laps,
     calculate_stint_summary,
-    perform_pit_stop
+    perform_pit_stop,
+    simulate_strategy
 )
 
 
@@ -89,6 +81,7 @@ def test_simulate_multiple_laps():
     assert state.tyre_age == 3
     assert state.fuel_load == 44
 
+
 def test_calculate_stint_summary():
     state = RaceState(
         race_id=1,
@@ -124,6 +117,7 @@ def test_calculate_stint_summary():
     assert summary["fuel_remaining"] == 44
     assert summary["tyre_age"] == 3
 
+
 def test_perform_pit_stop():
     state = RaceState(
         race_id=1,
@@ -147,6 +141,7 @@ def test_perform_pit_stop():
     assert updated_state.current_lap == 25
     assert updated_state.position == 3
     assert pit_time == 22.5
+
 
 def test_multi_stint_simulation():
     state = RaceState(
@@ -176,14 +171,15 @@ def test_multi_stint_simulation():
     assert first_stint[-1].lap_number == 21
     assert first_stint[-1].tyre_age == 3
 
-    updated_state, pit_time = perform_pit_stop(
+    state, pit_time = perform_pit_stop(
         state,
         new_compound="Hard",
         pit_stop_time=22.5
     )
-    assert pit_time == 22.5
+
     assert state.tyre_compound == "Hard"
     assert state.tyre_age == 0
+    assert pit_time == 22.5
 
     second_stint = simulate_laps(
         state,
@@ -195,4 +191,46 @@ def test_multi_stint_simulation():
     assert second_stint[0].lap_number == 22
     assert second_stint[0].tyre_age == 1
     assert second_stint[1].lap_number == 23
-    assert second_stint[1].tyre_age == 2               
+    assert second_stint[1].tyre_age == 2
+
+
+def test_simulate_strategy():
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=0,
+        position=1,
+        tyre_compound="Medium",
+        tyre_age=0,
+        fuel_load=50,
+        status="Racing"
+    )
+
+    lap_model = LapModel(
+        base_lap_time=90.0,
+        tyre_degradation=0.08,
+        fuel_penalty=0.03
+    )
+
+    stints = [
+        {
+            "lap_count": 3,
+            "next_compound": "Hard"
+        },
+        {
+            "lap_count": 2
+        }
+    ]
+
+    result = simulate_strategy(
+        strategy_name="One Stop",
+        state=state,
+        lap_model=lap_model,
+        stints=stints,
+        fuel_consumption=2,
+        pit_stop_time=22.5
+    )
+
+    assert result.strategy_name == "One Stop"
+    assert result.pit_stops == 1
+    assert result.total_race_time == 480.12            

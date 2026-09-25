@@ -1,5 +1,5 @@
 from domain.lap_model import LapModel
-from domain.race_state import LapResult, RaceState
+from domain.race_state import LapResult, RaceState, StrategyResult
 
 
 def advance_race_state(
@@ -77,4 +77,43 @@ def calculate_stint_summary(lap_results):
         "worst_lap_time": round(max(lap_times), 3),
         "fuel_remaining": lap_results[-1].fuel_load,
         "tyre_age": lap_results[-1].tyre_age
-    }       
+    }
+
+def simulate_strategy(
+    strategy_name: str,
+    state: RaceState,
+    lap_model: LapModel,
+    stints: list[dict],
+    fuel_consumption: float,
+    pit_stop_time: float
+) -> StrategyResult:
+    total_race_time = 0.0
+    pit_stops = 0
+
+    for stint in stints:
+        lap_results = simulate_laps(
+            state,
+            lap_model,
+            fuel_consumption,
+            stint["lap_count"]
+        )
+
+        summary = calculate_stint_summary(lap_results)
+
+        total_race_time += summary["total_time"]
+
+        if stint != stints[-1]:
+            _, pit_time = perform_pit_stop(
+                state,
+                stint["next_compound"],
+                pit_stop_time
+            )
+
+            total_race_time += pit_time
+            pit_stops += 1
+
+    return StrategyResult(
+        strategy_name=strategy_name,
+        total_race_time=round(total_race_time, 3),
+        pit_stops=pit_stops
+    )           
