@@ -44,4 +44,28 @@ def simulate_laps(
             )
         )
 
-    return lap_results   
+    return lap_results
+
+def calculate_stint_summary(lap_results):
+    if not lap_results:
+        return {
+            "lap_count": 0,
+            "total_time": 0,
+            "average_lap_time": None,
+            "best_lap_time": None,
+            "worst_lap_time": None,
+            "fuel_remaining": None,
+            "tyre_age": None
+        }
+
+    lap_times = [result.lap_time for result in lap_results]
+
+    return {
+        "lap_count": len(lap_results),
+        "total_time": round(sum(lap_times), 3),
+        "average_lap_time": round(sum(lap_times) / len(lap_times), 3),
+        "best_lap_time": round(min(lap_times), 3),
+        "worst_lap_time": round(max(lap_times), 3),
+        "fuel_remaining": lap_results[-1].fuel_load,
+        "tyre_age": lap_results[-1].tyre_age
+    }       
