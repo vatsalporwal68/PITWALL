@@ -16,7 +16,8 @@ def advance_race_state(
 
     lap_time = lap_model.calculate_lap_time(
         tyre_age=state.tyre_age,
-        fuel_load=state.fuel_load
+        fuel_load=state.fuel_load,
+        tyre_compound=state.tyre_compound
     )
 
     state.fuel_load -= fuel_consumption
@@ -51,14 +52,6 @@ def simulate_laps(
 
     return lap_results
 
-def perform_pit_stop(
-    state: RaceState,
-    new_compound: str,
-    pit_stop_time: float
-) -> tuple[RaceState, float]:
-    state.change_tyre(new_compound)
-
-    return state, pit_stop_time   
 
 def calculate_stint_summary(lap_results):
     if not lap_results:
@@ -77,12 +70,26 @@ def calculate_stint_summary(lap_results):
     return {
         "lap_count": len(lap_results),
         "total_time": round(sum(lap_times), 3),
-        "average_lap_time": round(sum(lap_times) / len(lap_times), 3),
+        "average_lap_time": round(
+            sum(lap_times) / len(lap_times),
+            3
+        ),
         "best_lap_time": round(min(lap_times), 3),
         "worst_lap_time": round(max(lap_times), 3),
         "fuel_remaining": lap_results[-1].fuel_load,
         "tyre_age": lap_results[-1].tyre_age
     }
+
+
+def perform_pit_stop(
+    state: RaceState,
+    new_compound: str,
+    pit_stop_time: float
+) -> tuple[RaceState, float]:
+    state.change_tyre(new_compound)
+
+    return state, pit_stop_time
+
 
 def simulate_strategy(
     strategy_name: str,
@@ -122,6 +129,7 @@ def simulate_strategy(
         total_race_time=round(total_race_time, 3),
         pit_stops=pit_stops
     )
+
 
 def compare_strategies(
     strategy_results: list[StrategyResult]

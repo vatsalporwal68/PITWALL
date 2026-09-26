@@ -12,7 +12,16 @@ from services.race_simulation_service import (
     simulate_strategy,
     compare_strategies
 )
+
 from domain.lap_model import LapModel
+import pytest
+
+
+COMPOUND_PERFORMANCE = {
+    "Soft": -0.8,
+    "Medium": 0.0,
+    "Hard": 0.6
+}
 
 
 def test_advance_race_state():
@@ -30,7 +39,8 @@ def test_advance_race_state():
     lap_model = LapModel(
         base_lap_time=90.0,
         tyre_degradation=0.08,
-        fuel_penalty=0.03
+        fuel_penalty=0.03,
+        compound_performance=COMPOUND_PERFORMANCE
     )
 
     next_state, lap_time = advance_race_state(
@@ -60,7 +70,8 @@ def test_simulate_multiple_laps():
     lap_model = LapModel(
         base_lap_time=90.0,
         tyre_degradation=0.08,
-        fuel_penalty=0.03
+        fuel_penalty=0.03,
+        compound_performance=COMPOUND_PERFORMANCE
     )
 
     lap_results = simulate_laps(
@@ -79,6 +90,7 @@ def test_simulate_multiple_laps():
     assert lap_results[0].position == 2
 
     assert lap_results[2].lap_number == 21
+    assert lap_results[2].lap_time == pytest.approx(91.62)
     assert lap_results[2].tyre_age == 3
     assert lap_results[2].fuel_load == 44
     assert lap_results[2].position == 2
@@ -103,7 +115,8 @@ def test_calculate_stint_summary():
     lap_model = LapModel(
         base_lap_time=90.0,
         tyre_degradation=0.08,
-        fuel_penalty=0.03
+        fuel_penalty=0.03,
+        compound_performance=COMPOUND_PERFORMANCE
     )
 
     lap_results = simulate_laps(
@@ -164,7 +177,8 @@ def test_multi_stint_simulation():
     lap_model = LapModel(
         base_lap_time=90.0,
         tyre_degradation=0.08,
-        fuel_penalty=0.03
+        fuel_penalty=0.03,
+        compound_performance=COMPOUND_PERFORMANCE
     )
 
     first_stint = simulate_laps(
@@ -195,8 +209,11 @@ def test_multi_stint_simulation():
     )
 
     assert second_stint[0].lap_number == 22
+    assert second_stint[0].lap_time == pytest.approx(92.0)
     assert second_stint[0].tyre_age == 1
+
     assert second_stint[1].lap_number == 23
+    assert second_stint[1].lap_time == pytest.approx(92.02)
     assert second_stint[1].tyre_age == 2
 
 
@@ -215,7 +232,8 @@ def test_simulate_strategy():
     lap_model = LapModel(
         base_lap_time=90.0,
         tyre_degradation=0.08,
-        fuel_penalty=0.03
+        fuel_penalty=0.03,
+        compound_performance=COMPOUND_PERFORMANCE
     )
 
     stints = [
@@ -239,7 +257,13 @@ def test_simulate_strategy():
 
     assert result.strategy_name == "One Stop"
     assert result.pit_stops == 1
-    assert result.total_race_time == 480.12
+
+    # Medium stint: 274.80
+    # Hard stint: 184.02
+    # Pit stop: 22.50
+    # Total: 481.32
+    assert result.total_race_time == 481.32
+
 
 def test_compare_strategies():
     strategy_one = StrategyResult(
@@ -263,4 +287,4 @@ def test_compare_strategies():
     assert comparison.fastest_strategy == "One Stop"
 
     assert comparison.time_difference["One Stop"] == 0.0
-    assert comparison.time_difference["Two Stop"] == 5.38   
+    assert comparison.time_difference["Two Stop"] == 5.38  
