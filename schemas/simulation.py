@@ -23,9 +23,7 @@ class StrategyInput(BaseModel):
 class StrategySimulationRequest(BaseModel):
     race_id: int
     race_entry_id: int
-    race_laps: int = Field(gt=0)
 
-    position: int = Field(gt=0)
     fuel_load: float = Field(ge=0)
 
     fuel_consumption: float = Field(gt=0)
@@ -38,16 +36,6 @@ class StrategySimulationRequest(BaseModel):
     compound_performance: dict[str, float]
 
     strategies: list[StrategyInput] = Field(min_length=1)
-
-    @model_validator(mode="after")
-    def validate_strategies(self):
-        for strategy in self.strategies:
-            if sum(strategy.stint_lengths) != self.race_laps:
-                raise ValueError(
-                    "Strategy stint lengths must equal race laps"
-                )
-
-        return self
 
 
 class StrategyResultResponse(BaseModel):

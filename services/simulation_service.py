@@ -47,6 +47,16 @@ def run_race_simulation(
             detail="Race entry not found"
         )
 
+    for strategy in strategies:
+        if strategy.total_laps != race.laps:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"Strategy must contain exactly "
+                    f"{race.laps} laps"
+                )
+            )
+
     state = RaceState(
         race_id=race.id,
         race_entry_id=race_entry.id,
