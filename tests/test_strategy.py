@@ -167,4 +167,67 @@ def test_evaluate_strategies():
     assert state.current_lap == 0
     assert state.tyre_age == 0
     assert state.fuel_load == 50
-    assert state.tyre_compound == "Medium"                        
+    assert state.tyre_compound == "Medium"
+
+def test_evaluate_and_compare_strategies():
+    from domain.lap_model import LapModel
+    from domain.race_state import RaceState
+    from domain.strategy import Strategy
+    from services.strategy_service import evaluate_and_compare_strategies
+
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=0,
+        position=1,
+        tyre_compound="Medium",
+        tyre_age=0,
+        fuel_load=50,
+        status="Racing"
+    )
+
+    lap_model = LapModel(
+        base_lap_time=90.0,
+        tyre_degradation=0.08,
+        fuel_penalty=0.03,
+        compound_performance={
+            "Soft": -0.8,
+            "Medium": 0.0,
+            "Hard": 0.6
+        }
+    )
+
+    strategies = [
+        Strategy(
+            compounds=["Medium"],
+            stint_lengths=[5]
+        ),
+        Strategy(
+            compounds=["Medium", "Hard"],
+            stint_lengths=[3, 2]
+        )
+    ]
+
+    comparison = evaluate_and_compare_strategies(
+        strategies=strategies,
+        state=state,
+        lap_model=lap_model,
+        fuel_consumption=2,
+        pit_stop_time=22.5
+    )
+
+    assert len(comparison.strategies) == 2
+
+    assert comparison.fastest_strategy == "Strategy 1"
+
+    assert comparison.time_difference["Strategy 1"] == 0.0
+    assert comparison.time_difference["Strategy 2"] == 23.22
+
+    assert comparison.strategies[0].total_race_time == 458.10
+    assert comparison.strategies[1].total_race_time == 481.32
+
+    # Original state must remain untouched
+    assert state.current_lap == 0
+    assert state.tyre_age == 0
+    assert state.fuel_load == 50
+    assert state.tyre_compound == "Medium"                           

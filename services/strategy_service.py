@@ -2,9 +2,16 @@ from dataclasses import replace
 from itertools import product
 
 from domain.lap_model import LapModel
-from domain.race_state import RaceState, StrategyResult
+from domain.race_state import (
+    RaceState,
+    StrategyComparisonResult,
+    StrategyResult
+)
 from domain.strategy import Strategy
-from services.race_simulation_service import simulate_strategy
+from services.race_simulation_service import (
+    compare_strategies,
+    simulate_strategy
+)
 
 
 def generate_strategies(
@@ -130,3 +137,21 @@ def evaluate_strategies(
         results.append(result)
 
     return results
+
+
+def evaluate_and_compare_strategies(
+    strategies: list[Strategy],
+    state: RaceState,
+    lap_model: LapModel,
+    fuel_consumption: float,
+    pit_stop_time: float
+) -> StrategyComparisonResult:
+    results = evaluate_strategies(
+        strategies=strategies,
+        state=state,
+        lap_model=lap_model,
+        fuel_consumption=fuel_consumption,
+        pit_stop_time=pit_stop_time
+    )
+
+    return compare_strategies(results)
