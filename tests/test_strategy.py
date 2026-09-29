@@ -104,4 +104,67 @@ def test_evaluate_strategy():
     # Original state must not be modified
     assert state.current_lap == 0
     assert state.tyre_age == 0
-    assert state.fuel_load == 50                    
+    assert state.fuel_load == 50
+
+def test_evaluate_strategies():
+    from domain.lap_model import LapModel
+    from domain.race_state import RaceState
+    from domain.strategy import Strategy
+    from services.strategy_service import evaluate_strategies
+
+    state = RaceState(
+        race_id=1,
+        race_entry_id=1,
+        current_lap=0,
+        position=1,
+        tyre_compound="Medium",
+        tyre_age=0,
+        fuel_load=50,
+        status="Racing"
+    )
+
+    lap_model = LapModel(
+        base_lap_time=90.0,
+        tyre_degradation=0.08,
+        fuel_penalty=0.03,
+        compound_performance={
+            "Soft": -0.8,
+            "Medium": 0.0,
+            "Hard": 0.6
+        }
+    )
+
+    strategies = [
+        Strategy(
+            compounds=["Medium"],
+            stint_lengths=[5]
+        ),
+        Strategy(
+            compounds=["Medium", "Hard"],
+            stint_lengths=[3, 2]
+        )
+    ]
+
+    results = evaluate_strategies(
+        strategies=strategies,
+        state=state,
+        lap_model=lap_model,
+        fuel_consumption=2,
+        pit_stop_time=22.5
+    )
+
+    assert len(results) == 2
+
+    assert results[0].strategy_name == "Strategy 1"
+    assert results[0].pit_stops == 0
+    assert results[0].total_race_time == 458.10
+
+    assert results[1].strategy_name == "Strategy 2"
+    assert results[1].pit_stops == 1
+    assert results[1].total_race_time == 481.32
+
+    # Original state must remain untouched
+    assert state.current_lap == 0
+    assert state.tyre_age == 0
+    assert state.fuel_load == 50
+    assert state.tyre_compound == "Medium"                        

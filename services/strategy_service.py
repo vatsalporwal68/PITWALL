@@ -104,3 +104,29 @@ def evaluate_strategy(
         fuel_consumption=fuel_consumption,
         pit_stop_time=pit_stop_time
     )
+
+
+def evaluate_strategies(
+    strategies: list[Strategy],
+    state: RaceState,
+    lap_model: LapModel,
+    fuel_consumption: float,
+    pit_stop_time: float
+) -> list[StrategyResult]:
+    results = []
+
+    for index, strategy in enumerate(strategies, start=1):
+        strategy_name = f"Strategy {index}"
+
+        result = evaluate_strategy(
+            strategy_name=strategy_name,
+            strategy=strategy,
+            state=state,
+            lap_model=lap_model,
+            fuel_consumption=fuel_consumption,
+            pit_stop_time=pit_stop_time
+        )
+
+        results.append(result)
+
+    return results
