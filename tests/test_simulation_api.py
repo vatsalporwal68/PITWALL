@@ -121,3 +121,64 @@ def test_simulate_strategies_endpoint(simulation_data):
     assert data["fastest_strategy"] == "Strategy 1"
     assert data["time_difference"]["Strategy 1"] == 0.0
     assert data["time_difference"]["Strategy 2"] == 23.22
+
+def test_rejects_strategy_with_wrong_lap_count():
+    response = client.post(
+        "/simulation/strategies",
+        json={
+            "race_id": 1,
+            "race_entry_id": 1,
+            "race_laps": 5,
+            "position": 1,
+            "fuel_load": 50,
+            "fuel_consumption": 2,
+            "pit_stop_time": 22.5,
+            "base_lap_time": 90.0,
+            "tyre_degradation": 0.08,
+            "fuel_penalty": 0.03,
+            "compound_performance": {
+                "Soft": -0.8,
+                "Medium": 0.0,
+                "Hard": 0.6
+            },
+            "strategies": [
+                {
+                    "compounds": ["Medium"],
+                    "stint_lengths": [3]
+                }
+            ]
+        }
+    )
+
+    assert response.status_code == 422
+
+
+def test_rejects_mismatched_compounds_and_stints():
+    response = client.post(
+        "/simulation/strategies",
+        json={
+            "race_id": 1,
+            "race_entry_id": 1,
+            "race_laps": 5,
+            "position": 1,
+            "fuel_load": 50,
+            "fuel_consumption": 2,
+            "pit_stop_time": 22.5,
+            "base_lap_time": 90.0,
+            "tyre_degradation": 0.08,
+            "fuel_penalty": 0.03,
+            "compound_performance": {
+                "Soft": -0.8,
+                "Medium": 0.0,
+                "Hard": 0.6
+            },
+            "strategies": [
+                {
+                    "compounds": ["Medium", "Hard"],
+                    "stint_lengths": [5]
+                }
+            ]
+        }
+    )
+
+    assert response.status_code == 422
