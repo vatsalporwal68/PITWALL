@@ -1,7 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from domain.lap_model import LapModel
-from domain.race_state import RaceState
+from database import get_db
 from domain.strategy import Strategy
 
 from schemas.simulation import (
@@ -9,9 +8,7 @@ from schemas.simulation import (
     StrategySimulationRequest
 )
 
-from services.strategy_service import (
-    evaluate_and_compare_strategies
-)
+from services.simulation_service import run_race_simulation
 
 
 router = APIRouter(
@@ -25,26 +22,9 @@ router = APIRouter(
     response_model=StrategyComparisonResponse
 )
 def simulate_strategies(
-    request: StrategySimulationRequest
+    request: StrategySimulationRequest,
+    db=Depends(get_db)
 ):
-    state = RaceState(
-        race_id=request.race_id,
-        race_entry_id=request.race_entry_id,
-        current_lap=0,
-        position=request.position,
-        tyre_compound="Unknown",
-        tyre_age=0,
-        fuel_load=request.fuel_load,
-        status="Racing"
-    )
-
-    lap_model = LapModel(
-        base_lap_time=request.base_lap_time,
-        tyre_degradation=request.tyre_degradation,
-        fuel_penalty=request.fuel_penalty,
-        compound_performance=request.compound_performance
-    )
-
     strategies = [
         Strategy(
             compounds=strategy.compounds,
@@ -53,12 +33,18 @@ def simulate_strategies(
         for strategy in request.strategies
     ]
 
-    comparison = evaluate_and_compare_strategies(
+    comparison = run_race_simulation(
+        race_id=request.race_id,
+        race_entry_id=request.race_entry_id,
+        db=db,
         strategies=strategies,
-        state=state,
-        lap_model=lap_model,
+        fuel_load=request.fuel_load,
         fuel_consumption=request.fuel_consumption,
-        pit_stop_time=request.pit_stop_time
+        pit_stop_time=request.pit_stop_time,
+        base_lap_time=request.base_lap_time,
+        tyre_degradation=request.tyre_degradation,
+        fuel_penalty=request.fuel_penalty,
+        compound_performance=request.compound_performance
     )
 
     return comparison

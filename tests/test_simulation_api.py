@@ -1,17 +1,83 @@
+import pytest
 from fastapi.testclient import TestClient
 
+from database import SessionLocal
 from main import app
+from models import Circuit, Driver, Race, RaceEntry, Team
 
 
 client = TestClient(app)
 
 
-def test_simulate_strategies_endpoint():
+@pytest.fixture
+def simulation_data():
+    db = SessionLocal()
+
+    circuit = Circuit(
+        name="Test Circuit",
+        country="Test Country"
+    )
+    db.add(circuit)
+    db.flush()
+
+    team = Team(
+        name="Test Team",
+        nationality="Test"
+    )
+    db.add(team)
+    db.flush()
+
+    driver = Driver(
+        name="Test Driver",
+        number=1,
+        team_id=team.id
+    )
+    db.add(driver)
+    db.flush()
+
+    race = Race(
+        name="Test Race",
+        circuit_id=circuit.id,
+        laps=5
+    )
+    db.add(race)
+    db.flush()
+
+    race_entry = RaceEntry(
+        race_id=race.id,
+        driver_id=driver.id,
+        grid_position=1,
+        finishing_position=None,
+        points=0.0,
+        status="Racing"
+    )
+    db.add(race_entry)
+
+    db.commit()
+
+    data = {
+        "race_id": race.id,
+        "race_entry_id": race_entry.id
+    }
+
+    yield data
+
+    db.delete(race_entry)
+    db.delete(race)
+    db.delete(driver)
+    db.delete(team)
+    db.delete(circuit)
+
+    db.commit()
+    db.close()
+
+
+def test_simulate_strategies_endpoint(simulation_data):
     response = client.post(
         "/simulation/strategies",
         json={
-            "race_id": 1,
-            "race_entry_id": 1,
+            "race_id": simulation_data["race_id"],
+            "race_entry_id": simulation_data["race_entry_id"],
             "race_laps": 5,
             "position": 1,
             "fuel_load": 50,
